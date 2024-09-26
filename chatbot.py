@@ -42,7 +42,7 @@ def chatbot_response(query, chat_history):
 
 
     # 메세지 생성
-    message1 = f'검색하신 "{product_name}"에는 {total_tox_num}건의 유해물질이 포함되어 있습니다.\n'
+    message1 = f'"{product_name}"에는 {total_tox_num}건의 유해물질이 포함되어 있습니다.\n'
 
     if total_tox_num:
         message2 = ""
@@ -72,12 +72,14 @@ with gr.Blocks() as demo:
 
     # Gradio UI 컴포넌트
     with gr.Row():
-        chatbot = gr.Chatbot(label="챗봇")
+        # 윈도우 창 크기에 맞게 대화창의 높이와 너비 설정
+        chatbot = gr.Chatbot(label="챗봇", height=1000)  # height=600으로 기본 높이 설정, 필요시 조정 가능
     with gr.Row():
         with gr.Column(scale=6):
-            user_input = gr.Textbox(show_label=False, placeholder="메시지를 입력하세요.")
+            user_input = gr.Textbox(show_label=False, placeholder="메시지를 입력하세요.", lines=1)
         with gr.Column(scale=1):
             send_button = gr.Button("전송")
+
 
     # 버튼 클릭 시 chatbot_response 함수 호출
     send_button.click(
