@@ -5,6 +5,7 @@ from rank_bm25 import BM25Okapi
 df7 = pd.read_csv("./product_7_data.csv")
 product_names_df = pd.read_csv("./augmented_product_name.csv")
 df7["search_name"] = product_names_df.apply(lambda x: f"{x['org_name']} | {x['aug_name']}", axis=1)
+df7.to_csv("./database.csv", index=False)
 
 corpus = df7["search_name"].tolist()
 tokenized_corpus = [doc.split(" ") for doc in corpus] # 띄어쓰기 기준 구분
@@ -18,6 +19,7 @@ result = pd.DataFrame({
     'score': doc_scores
 })
 result.sort_values(['score'], ascending=False)
+result.iloc[result["score"].argmax(), 1]
 
 
 #%%
