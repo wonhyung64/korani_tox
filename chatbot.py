@@ -3,6 +3,7 @@ import pandas as pd
 import gradio as gr
 from rank_bm25 import BM25Okapi
 
+
 # 1. 챗봇 응답을 처리하는 함수 정의
 def chatbot_response(query, chat_history):
     # 여기서 간단한 챗봇 로직을 정의하거나, GPT 같은 모델을 사용할 수 있습니다.
@@ -11,16 +12,17 @@ def chatbot_response(query, chat_history):
     global search_db, product_db, chemical_db, corpus, bm25
 
     # 쿼리 retrieval top-1
-    tokenized_query = query.split(" ") 
-    doc_scores = bm25.get_scores(tokenized_query)
+    tokenized_query = query.split(" ") # tokenize the input query
+    doc_scores = bm25.get_scores(tokenized_query) # similarity beteween search_db and 
     result = pd.DataFrame({
         'text': corpus,
         'master_num': search_db["제품마스터번호"],
         'score': doc_scores,
     })
     top1_master_num = result.iloc[result["score"].argmax(), 1]
-    product_name = search_db.loc[search_db["제품마스터번호"] == top1_master_num, "제품명-국문"].item()
+    product_name = search_db.loc[search_db["제품마스터번호"] == top1_master_num, "제품명-국문"].item() ## top1_master_num 을 최대한 잘 찾게 하기
 
+    ## Top-3 를 뽑아서 선택 - 
 
     # 제품 성분 조회
     search_db
@@ -48,8 +50,8 @@ def chatbot_response(query, chat_history):
         message2 = ""
         for i in range(total_tox_num):
             chemical_message = f'\t({i+1}) {compositions.loc[i, "물질명-영문"]}\n'
-            predict_message = f'\t\t유해도 {int(compositions.loc[i,"predict"]*10) * "■" + int((1 - compositions.loc[i,"predict"])*10) * "□"}\n'
-            confidence_message = f'\t\t신뢰도 {int(compositions.loc[i,"confidence score"]*10) * "■" + int((1 - compositions.loc[i,"predict"])*10) * "□"}\n'
+            predict_message = f'\t\t유해도 {int(round(compositions.loc[i,"predict"]*10)) * "■" + int(round((1 - compositions.loc[i,"predict"]))*10) * "□"}\n'
+            confidence_message = f'\t\t신뢰도 {int(round(compositions.loc[i,"confidence score"])*10) * "■" + int(round((1 - compositions.loc[i,"predict"]))*10) * "□"}\n'
             message2 = message2 + chemical_message + predict_message + confidence_message
         message2 += "\n"
             
@@ -91,11 +93,17 @@ with gr.Blocks() as demo:
 
 # 3. Gradio 인터페이스 실행
 if __name__ == "__main__":
-    search_db = pd.read_csv("./database.csv")
-    chemical_db = pd.read_csv("./product_5_data.csv")
-    product_db = pd.read_csv("./product_4_data.csv")
-    corpus = search_db["search_name"].tolist()
+    search_db = pd.read_csv("./database.csv") ## 검색DB
+    chemical_db = pd.read_csv("./product_5_data.csv") ##화학물질 정보
+    product_db = pd.read_csv("./product_4_data.csv") ## 제품정보
+    corpus = search_db["search_name"].tolist() ##
     tokenized_corpus = [doc.split(" ") for doc in corpus] # 띄어쓰기 기준 구분
     bm25 = BM25Okapi(tokenized_corpus)
 
     demo.launch()
+
+
+#%%
+
+
+#%%

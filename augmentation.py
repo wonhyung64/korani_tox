@@ -1,7 +1,7 @@
 import openai
 from  assets.cred.chatgpt import OPENAICRED
 
-def chat(sample, cred):
+def chat(sample, cred, prompt):
     client = openai.OpenAI(
         # This is the default and can be omitted
         api_key=cred,
@@ -9,14 +9,7 @@ def chat(sample, cred):
     if sample is None:
         raise ValueError
 
-    prompt = f"""\
-    주어진 지시에 대한 적절한 응답을 생성해주세요. 이러한 작업 지침은 ChatGPT 모델에 주어지며, ChatGPT 모델이 지침을 완료하는지 평가합니다.
-
-    요구 사항은 다음과 같습니다:
-    2. 결과물 이외의 텍스트는 생성 금지.
-
-    주어진 지시: 다음 제품명의 최소 의미 단위로 구분하여 공백을 삽입해주세요.: "{sample}"
-    """
+    prompt = prompt + sample
     
     messages = []
     messages.extend([

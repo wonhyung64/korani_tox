@@ -6,8 +6,8 @@ from assets.cred.chatgpt import OPENAICRED
 
 
 # %%
-df7 = pd.read_csv("./product_7_data.csv")
-product_names = df7["제품명-국문"].tolist()
+df = pd.read_csv("./train_2warnings.csv")
+product_names = df["제품명-국문"].tolist()
 
 prompt = f"""\
 주어진 지시에 대한 적절한 응답을 생성해주세요. 이러한 작업 지침은 ChatGPT 모델에 주어지며, ChatGPT 모델이 지침을 완료하는지 평가합니다.
